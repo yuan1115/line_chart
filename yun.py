@@ -2,7 +2,7 @@
 # @Author: jmx
 # @Date:   2019-03-25 11:13:44
 # @Last Modified by:   jmx
-# @Last Modified time: 2019-03-26 14:42:35
+# @Last Modified time: 2019-03-26 17:03:21
 from wx import App, OK, ICON_INFORMATION, MessageBox
 from gui import MyFrame1, dataList
 import matplotlib.pyplot as plt
@@ -32,6 +32,7 @@ class yun(MyFrame1):
                 dataList.remove(i)
 
         x = range(len(dataList))
+        self.count = len(dataList)
         if len(dataList) <= 3:
             MessageBox(u"数据太少,至少3对数据", "Message",
                        OK | ICON_INFORMATION)
@@ -86,17 +87,41 @@ class yun(MyFrame1):
         x_min, x_max = axtemp.get_xlim()
         fanwei = (x_max - x_min) / 10
         if event.button == 'up':
-            axtemp.set(xlim=(x_min + fanwei, x_max - fanwei))
+            if x_min < self.count-30:
+                if x_max <= self.count:
+                    axtemp.set(xlim=(x_min + 1, x_max-1))
+                else:
+                    axtemp.set(xlim=(x_min + 1, x_max))
         elif event.button == 'down':
-            axtemp.set(xlim=(x_min - fanwei, x_max + fanwei))
+            if x_min > 30:
+                if x_max <= self.count:
+                    axtemp.set(xlim=(x_min - 1, x_max+1))
+                else:
+                    axtemp.set(xlim=(x_min - 1, x_max))
         self.fig.canvas.draw_idle()  # 绘图动作实时反映在图像上
 
     def move(self, event):
         axtemp = event.inaxes
+        x_min, x_max = axtemp.get_xlim()
+        print(x_max, x_min)
         if event.key == 'left':
-            pass
+            if x_max < self.count:
+                axtemp.set(xlim=(x_min+1, x_max + 1))
         elif event.key == 'right':
-            pass
+            if x_max > 30:
+                axtemp.set(xlim=(x_min-1, x_max - 1))
+        elif event.key == 'up':
+            if x_min < self.count-30:
+                if x_max <= self.count:
+                    axtemp.set(xlim=(x_min + 1, x_max-1))
+                else:
+                    axtemp.set(xlim=(x_min + 1, x_max))
+        elif event.key == 'down':
+            if x_min > 30:
+                if x_max <= self.count:
+                    axtemp.set(xlim=(x_min - 1, x_max+1))
+                else:
+                    axtemp.set(xlim=(x_min - 1, x_max))
         self.fig.canvas.draw_idle()
 
     def listact(self, event):
